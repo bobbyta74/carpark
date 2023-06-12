@@ -6,7 +6,7 @@ cursor = connection.cursor()
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS cars(
         reg TEXT,
-        entry INTEGER
+        entry REAL
     )
 """)
 connection.commit()
@@ -21,12 +21,25 @@ while reg != "exit":
     """, [ reg ]).fetchone()
 
     if result == None:
+        entry = time.time()
         #Add plate and time entered to database
         cursor.execute("""
             INSERT INTO cars(reg, entry)
             VALUES (?, ?)
-        """, [ reg, time.time() ])
+        """, [ reg, entry ])
+        connection.commit()
+        secondstoday = entry % (3600*24)
+        hours = int(secondstoday // 3600)
+        minutes = int((secondstoday % 3600) // 60)
+        seconds = int(secondstoday % minutes)
+        print(f"Welcome. Time of entry: {hours}:{minutes}:{seconds}")
     else:
         #Output time stayed in seconds
         timedelta = time.time() - result[0]
-        print("Length of stay:", timedelta)
+        print(f"You stayed {timedelta} seconds. Pay up.")
+        print("Goodbye.")
+        cursor.execute("""
+            DELETE FROM cars WHERE reg = ?
+        """, [ reg ])
+
+connection.close()
