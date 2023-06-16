@@ -1,16 +1,20 @@
 import sqlite3, time
-connection = sqlite3.connect("carpark.db")
-cursor = connection.cursor()
 
-#Create table
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS cars(
-        reg TEXT,
-        entry REAL
-    )
-""")
-connection.commit()
+def initialise_db():
+    connection = sqlite3.connect("carpark.db")
+    cursor = connection.cursor()
 
+    #Create table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS cars(
+            reg TEXT,
+            entry REAL
+        )
+    """)
+    connection.commit()
+    connection.close()
+
+initialise_db()
 reg = ""
 while reg != "exit":
     reg = input("Enter registration (or \"exit\" to exit): ")
